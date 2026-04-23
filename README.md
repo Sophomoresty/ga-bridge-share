@@ -1,13 +1,58 @@
 # ga-bridge
 
-Shareable WSL bridge for running GenericAgent on Windows and exposing it as a reusable Codex skill.
+一个可分享的 WSL 桥接方案, 用来在 Windows 上运行 GenericAgent, 并把它暴露成可复用的 Codex skill.
+
+A shareable WSL bridge for running GenericAgent on Windows and exposing it as a reusable Codex skill.
+
+这个仓库打包了两部分:
+
+- 一个面向 WSL 的通用 `ga` CLI
+- 一个可安装到 `~/.codex/skills` 的 `ga-bridge` skill
 
 This repository packages two things together:
 
 - a portable `ga` CLI for WSL
 - a `ga-bridge` skill that agents can install into `~/.codex/skills`
 
+安装后, 其他用户就可以在 WSL 里用稳定的命令面调用 GenericAgent, 并让自己的 agent 通过这个 skill 路由 GA 任务.
+
 After installation, another user can run GenericAgent from WSL with a stable command surface and let their agent route GA tasks through the installed skill.
+
+## 为什么做这个
+
+我做这个仓库, 不是为了替代 GA, 而是为了把 GA 接到一个更顺手的工作流里.
+
+- GA 本身作为执行型 agent 的效果很好, 特别适合真正去做事, 而不只是聊天.
+- GA 对 Windows 的适配非常强, 在浏览器控制, GUI 自动化, OCR, Windows 文件操作这类任务上明显比普通 WSL agent 更合适.
+- 对我自己来说, 这种能力尤其适合控制浏览器做逆向, 抓页面行为, 观察运行态, 或处理必须依赖 Windows 环境的工作.
+- 但 GA 目前原生 GUI 不够好用, 日常切换和管理成本偏高.
+- 同时我自己更习惯用 Codex app 作为主工作界面.
+
+所以这个仓库的目标很直接:
+
+- 保留 GA 在执行和 Windows 适配上的优势.
+- 用一个稳定的 CLI 把它从 WSL 调起来.
+- 再用一个 skill 把它接进 Codex 的任务路由里.
+
+这样做完以后, 我仍然可以在自己熟悉的 Codex app 里工作, 但在需要 Windows 执行能力, 浏览器操作, 或逆向观察时, 可以直接把任务切给 GA.
+
+## Why this exists
+
+This repo is not meant to replace GA. It is meant to make GA fit a workflow that is easier to use every day.
+
+- GA is already very good as an execution-oriented agent.
+- Its Windows integration is especially strong for browser control, GUI automation, OCR, and Windows-side file operations.
+- That makes it a strong fit for tasks like browser-driven reverse work, runtime inspection, and other jobs that need real Windows behavior.
+- However, the native GA GUI is still hard to use as a primary daily interface.
+- At the same time, I personally prefer using the Codex app as my main workspace.
+
+So the goal of this repository is simple:
+
+- keep GA's strength in execution and Windows integration
+- expose it through a stable CLI from WSL
+- connect it back into Codex through an installable skill
+
+That way I can stay inside the Codex app for normal work, and still hand off tasks to GA whenever I need Windows-native execution, browser control, or reverse-oriented inspection.
 
 ## What this repo includes
 
