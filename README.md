@@ -1,84 +1,198 @@
-# ga-bridge share bundle
+# ga-bridge
 
-WSL 下的 `ga` CLI + Codex skill 分享包.
+Shareable WSL bridge for running GenericAgent on Windows and exposing it as a reusable Codex skill.
 
-## 包内容
+This repository packages two things together:
 
-- `ga_cli.py`: 通用版 CLI.
-- `skill/ga-bridge/`: 可直接安装到 `~/.codex/skills/ga-bridge/` 的 skill.
-- `config.example.json`: 配置模板.
-- `install.sh`: WSL 一键安装.
-- `install.ps1`: Windows 侧一键转调到 WSL 安装.
+- a portable `ga` CLI for WSL
+- a `ga-bridge` skill that agents can install into `~/.codex/skills`
 
-## 前置条件
+After installation, another user can run GenericAgent from WSL with a stable command surface and let their agent route GA tasks through the installed skill.
 
-- WSL2.
-- Python 3.
-- Windows 侧已安装 GenericAgent.
-- 目标机器的 agent 使用 `~/.codex/skills`.
+## What this repo includes
 
-## 一键安装
+- `ga_cli.py`: portable `ga` CLI
+- `skill/ga-bridge/`: installable Codex skill bundle
+- `install.sh`: one-step installer for WSL
+- `install.ps1`: Windows PowerShell wrapper that calls the WSL installer
+- `config.example.json`: user config template
 
-### 从 GitHub
+## Features
+
+- Stable CLI surface: `doctor`, `start`, `revise-job`, `summary`, `logs`, `complete`
+- Skill-based routing for browser tasks, Windows ops, analysis, review, frontend, and long-task loops
+- Config-driven paths instead of hardcoded local machine values
+- Automatic skill `owner` rewrite during install
+- Works as a shareable bundle without shipping local jobs, sessions, or tokens
+
+## Prerequisites
+
+Before installing, the target machine should have:
+
+- WSL2
+- Python 3 available inside WSL
+- GenericAgent installed on Windows
+- a Codex-compatible skills directory at `~/.codex/skills`
+
+Default paths assume:
+
+- Windows GA root: `D:\GenericAgent`
+- WSL GA root: `/mnt/d/GenericAgent`
+
+If the target machine uses different paths, update the generated config after install.
+
+## Quick start
+
+### Clone from GitHub
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/Sophomoresty/ga-bridge-share.git
+cd ga-bridge-share
+chmod +x ./install.sh
+./install.sh
+```
+
+### Or install from an extracted archive
+
+```bash
 cd ga-bridge-package
 chmod +x ./install.sh
 ./install.sh
 ```
 
-### WSL
+## Installation
+
+### Option 1: WSL
 
 ```bash
-cd ga-bridge-package
 chmod +x ./install.sh
 ./install.sh
 ```
 
-### Windows PowerShell
+### Option 2: Windows PowerShell
 
 ```powershell
 Set-ExecutionPolicy -Scope Process Bypass
 .\install.ps1
 ```
 
-## 安装结果
+## What gets installed
 
-- CLI:
-  - `~/.local/bin/ga`
-  - `~/.local/bin/ga_cli.py`
-- Skill:
-  - `~/.codex/skills/ga-bridge/`
-- 配置:
-  - `~/.config/ga/config.json`
+### CLI
 
-## 安装后需要检查
+- `~/.local/bin/ga`
+- `~/.local/bin/ga_cli.py`
 
-执行:
+### Skill
+
+- `~/.codex/skills/ga-bridge/`
+
+### User config
+
+- `~/.config/ga/config.json`
+
+## Verify the installation
+
+Run:
 
 ```bash
 ga doctor
 ```
 
-如果这些值不对, 修改 `~/.config/ga/config.json`:
+Successful output should show:
 
-- `ga_root_win`
-- `ga_root_wsl`
-- `windows_temp_win`
-- `windows_temp_wsl`
-- `wsl_distro`
-- `default_llm_no`
+- detected GA runtime paths
+- detected skill root
+- available LLM options
+- supported profiles and subagent policies
 
-## 给别人的最短说明
+## Configuration
 
-1. 解压这个包.
-2. 在 WSL 跑 `./install.sh`, 或在 Windows 跑 `.\install.ps1`.
-3. 执行 `ga doctor`.
-4. 按机器实际路径改 `~/.config/ga/config.json`.
+The installer creates:
 
-## 说明
+```text
+~/.config/ga/config.json
+```
 
-- 安装脚本会把 `skill/ga-bridge/SKILL.md` 的 `owner` 自动改成当前 Linux 用户名.
-- 这个包不会改你当前仓库里的 skill 源文件, 只安装到用户目录.
-- 仓库本身不包含用户本地 token, job, session, 或缓存状态.
+Adjust these fields if the target machine differs from the defaults:
+
+| Key | Purpose |
+| --- | --- |
+| `ga_root_win` | Windows path to GenericAgent |
+| `ga_root_wsl` | WSL path to the same GenericAgent install |
+| `windows_temp_win` | Windows temp directory |
+| `windows_temp_wsl` | WSL view of that Windows temp directory |
+| `wsl_distro` | WSL distro name used by the wrapper |
+| `default_llm_no` | Default LLM slot returned by `ga doctor` |
+| `skills_root` | Skill install root, normally `~/.codex/skills` |
+| `ga_webui_bin` | Optional WebUI wrapper path |
+
+## Basic usage
+
+### Check runtime
+
+```bash
+ga doctor
+```
+
+### Start a task
+
+```bash
+ga start --task "open browser visit https://example.com and screenshot"
+```
+
+### Run a read-only review
+
+```bash
+ga start --profile review --task "read-only audit this page and summarize findings"
+```
+
+### Continue the same job
+
+```bash
+ga revise-job --job <job_id> --feedback "continue review and verify these points"
+```
+
+### Read the result
+
+```bash
+ga summary --job <job_id>
+```
+
+## Using the installed skill
+
+After installation, the skill is available at:
+
+```text
+~/.codex/skills/ga-bridge/
+```
+
+An agent can then route tasks through the installed skill, for example:
+
+- use GA for browser automation
+- use GA for Windows GUI and OCR
+- use GA for independent review
+- use GA as a delegated execution bridge from WSL
+
+## Repository layout
+
+```text
+.
+├── README.md
+├── config.example.json
+├── ga_cli.py
+├── install.ps1
+├── install.sh
+└── skill/
+    └── ga-bridge/
+        ├── SKILL.md
+        ├── references/
+        ├── rules/
+        └── workflows/
+```
+
+## Notes
+
+- `install.sh` rewrites `skill/ga-bridge/SKILL.md` so `owner` matches the current Linux user.
+- This repository does not ship local tokens, jobs, sessions, or cache state.
+- The repo is meant to be shareable; machine-specific values live in `~/.config/ga/config.json`.
