@@ -1,0 +1,13 @@
+{
+  "ga_root_win": "D:\\GenericAgent",
+  "ga_root_wsl": "/mnt/d/GenericAgent",
+  "windows_temp_win": "C:\\Users\\__WINDOWS_USER__\\AppData\\Local\\Temp",
+  "windows_temp_wsl": "/mnt/c/Users/__WINDOWS_USER__/AppData/Local/Temp",
+  "skills_root": "__HOME__/.codex/skills",
+  "wsl_distro": "__WSL_DISTRO__",
+  "wsl_exe_win": "C:\\Windows\\System32\\wsl.exe",
+  "wsl_default_cwd": "__HOME__",
+  "ga_webui_bin": "__HOME__/.local/bin/ga-webui",
+  "default_llm_no": 0,
+  "watch_idle_timeout": 180
+}
